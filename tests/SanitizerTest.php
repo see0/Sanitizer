@@ -39,9 +39,40 @@ class SanitizerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('  HellO EverYboDy   ', $data['name']);
     }
 
+
+    public function test_nested_input()
+    {
+        $data = [
+            'first_level' => [
+                'name' => '  HellO EverYboDy   ',
+            ],
+            'first_level_arr' => [
+                ['name' => '  HellO   '],
+                [
+                    'name' => '  WaTeVeR   ',
+                    'list' => ["  lol  "]
+                ],
+            ],
+        ];
+
+        $rules = [
+            'first_level.name' => 'trim|capitalize',
+            'first_level_arr.*.name' => 'trim|capitalize',
+            'first_level_arr.*.list.*' => 'trim|capitalize',
+            'first_level_arr.*.wasad.*.wate' => 'trim|capitalize',
+        ];
+
+
+        $data = $this->sanitize($data, $rules);
+        $this->assertEquals('Hello Everybody', $data['first_level']['name']);
+        $this->assertEquals('Hello', $data['first_level_arr'][0]['name']);
+        $this->assertEquals('Watever', $data['first_level_arr'][1]['name']);
+        $this->assertEquals('Lol', $data['first_level_arr'][1]['list'][0]);
+    }
+
     /**
-     *  @test
-     *  @expectedException \InvalidArgumentException
+     * @test
+     * @expectedException \InvalidArgumentException
      */
     public function it_throws_exception_if_non_existing_filter()
     {

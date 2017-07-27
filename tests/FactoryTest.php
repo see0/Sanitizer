@@ -2,6 +2,7 @@
 
 use Waavi\Sanitizer\Laravel\Factory;
 use Waavi\Sanitizer\Sanitizer;
+require("CustomFilter.php");
 
 class FactoryTest extends PHPUnit_Framework_TestCase
 {

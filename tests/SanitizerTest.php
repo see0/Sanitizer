@@ -39,6 +39,21 @@ class SanitizerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('  HellO EverYboDy   ', $data['name']);
     }
 
+    public function test_only_nested_rule_input()
+    {
+        $data = [
+            'id' => 'nope',
+            'label' => 'lol'
+        ];
+        $rules = [
+            'data.*.id' => 'capitalize',
+            'label' => 'capitalize'
+        ];
+
+        $data = $this->sanitize($data, $rules);
+        $this->assertEquals('nope', $data['id']);
+        $this->assertEquals('Lol', $data['label']);
+    }
 
     public function test_nested_input()
     {

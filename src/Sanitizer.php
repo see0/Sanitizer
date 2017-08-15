@@ -134,6 +134,7 @@ class Sanitizer
     protected function sanitize_wildcard_keys(&$array, $rule_key, $key = null)
     {
         $key = is_null($key) ? $rule_key : $key;
+        $key_not_found = false;
 
         $keys = explode('.', $key);
 
@@ -147,6 +148,7 @@ class Sanitizer
             }
 
             if (!isset($array[$key]) || !is_array($array[$key])) {
+                $key_not_found = true;
                 break;
             }
 
@@ -155,7 +157,7 @@ class Sanitizer
 
         $current = array_shift($keys);
 
-        if($current == '*' && is_array($array)){
+        if($current == '*' && is_array($array) && !$key_not_found){
             foreach($array as &$item){
              $item =  is_string($item) ? $this->sanitizeAttribute($rule_key, $item) : $item;
             }

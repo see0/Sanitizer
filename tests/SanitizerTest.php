@@ -85,6 +85,33 @@ class SanitizerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Lol', $data['first_level_arr'][1]['list'][0]);
     }
 
+
+    public function test_regression_data()
+    {
+        $data = [
+            'item' => [
+                [
+                    'id' => 'cool',
+                    'product' => [
+                        'id' => 'product_id',
+                    ]
+                ]
+
+            ]
+
+        ];
+
+        $rules = [
+            'item.*.product.id' => 'trim|capitalize',
+            'item.*.tax.id' => 'trim|capitalize',
+        ];
+
+        $data = $this->sanitize($data, $rules);
+        $this->assertEquals('cool', $data['item'][0]['id']);
+        $this->assertEquals('Product_id', $data['item'][0]['product']['id']);
+
+    }
+
     /**
      * @test
      * @expectedException \InvalidArgumentException

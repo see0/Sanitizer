@@ -134,8 +134,7 @@ class Sanitizer
     protected function sanitize_wildcard_keys(&$array, $rule_key, $key = null)
     {
         $key = is_null($key) ? $rule_key : $key;
-        $key_not_found = false;
-
+        $break = false;
         $keys = explode('.', $key);
 
         while (count($keys) > 1) {
@@ -148,24 +147,28 @@ class Sanitizer
             }
 
             if (!isset($array[$key]) || !is_array($array[$key])) {
-                $key_not_found = true;
+                if(count($keys) > 0){
+                    $break = true;
+                }
                 break;
             }
 
             $array = &$array[$key];
         }
 
-        $current = array_shift($keys);
+        if(!$break){
+            $current = array_shift($keys);
 
-        if($current == '*' && is_array($array) && !$key_not_found){
-            foreach($array as &$item){
-             $item =  is_string($item) ? $this->sanitizeAttribute($rule_key, $item) : $item;
+            if($current == '*' && is_array($array)){
+                foreach($array as &$item){
+                    $item =  is_string($item) ? $this->sanitizeAttribute($rule_key, $item) : $item;
+                }
+
+            }elseif (isset($array[$current])){
+                $array[$current] = $this->sanitizeAttribute($rule_key, $array[$current]);
             }
-
-        }elseif (isset($array[$current])){
-            $array[$current] = $this->sanitizeAttribute($rule_key, $array[$current]);
-
         }
+
 
         return $array;
     }

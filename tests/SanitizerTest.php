@@ -93,8 +93,11 @@ class SanitizerTest extends PHPUnit_Framework_TestCase
                 [
                     'id' => 'cool',
                     'product' => [
-                        'id' => 'product_id',
+                        'id' => '  product_id',
                     ]
+                ],
+                [
+                    'test' => 'cool',
                 ]
 
             ]
@@ -104,10 +107,13 @@ class SanitizerTest extends PHPUnit_Framework_TestCase
         $rules = [
             'item.*.product.id' => 'trim|capitalize',
             'item.*.tax.id' => 'trim|capitalize',
+            'item.*.test' => 'trim|capitalize',
+
         ];
 
         $data = $this->sanitize($data, $rules);
         $this->assertEquals('cool', $data['item'][0]['id']);
+        $this->assertEquals('Cool', $data['item'][1]['test']);
         $this->assertEquals('Product_id', $data['item'][0]['product']['id']);
 
     }
